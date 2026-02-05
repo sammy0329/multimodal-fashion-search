@@ -29,3 +29,8 @@ class Settings(BaseSettings):
 
     # Redis
     redis_url: str = "redis://localhost:6379"
+
+    # Pipeline
+    clip_batch_size: int = 32
+    clip_device: str = ""
+    supabase_storage_bucket: str = "product-images"
