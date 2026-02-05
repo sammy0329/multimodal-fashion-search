@@ -301,12 +301,12 @@ CREATE INDEX idx_products_price ON products(price);
 - [x] Docker Compose 환경 구성
 
 ### M2: 데이터 파이프라인
-- [ ] AI Hub 데이터 신청 및 다운로드
-- [ ] 이미지 전처리 스크립트 (리사이즈 224x224)
-- [ ] 한국어 라벨/메타데이터 파싱
-- [ ] CLIP 임베딩 배치 스크립트
-- [ ] 메타데이터 Supabase 적재
-- [ ] 벡터 + 메타데이터 Pinecone 적재
+- [x] AI Hub 데이터 신청 및 다운로드
+- [x] 한국어 라벨/메타데이터 파싱
+- [x] CLIP 임베딩 배치 스크립트
+- [x] 메타데이터 Supabase 적재
+- [x] 벡터 + 메타데이터 Pinecone 적재
+- [x] 데이터 파이프라인 오케스트레이터 (seed_data.py CLI)
 
 ### M3: 검색 API
 - [ ] /search 엔드포인트 구현
@@ -346,5 +346,5 @@ CREATE INDEX idx_products_price ON products(price);
 
 ## 현재 상태
 
-**Phase**: 초기 세팅
-**작업 중**: M1 기반 구축
+**Phase**: M2 완료
+**작업 중**: M3 검색 API
