@@ -293,12 +293,12 @@ CREATE INDEX idx_products_price ON products(price);
 ## 마일스톤
 
 ### M1: 기반 구축
-- [ ] FastAPI 보일러플레이트 세팅
-- [ ] Next.js 프로젝트 초기화
-- [ ] Supabase 프로젝트 생성 + 테이블 생성
-- [ ] Pinecone 인덱스 생성
-- [ ] CLIP 모델 로컬 환경 구성
-- [ ] Docker Compose 환경 구성
+- [x] FastAPI 보일러플레이트 세팅
+- [x] Next.js 프로젝트 초기화
+- [x] Supabase 프로젝트 생성 + 테이블 생성
+- [x] Pinecone 인덱스 생성
+- [x] CLIP 모델 로컬 환경 구성
+- [x] Docker Compose 환경 구성
 
 ### M2: 데이터 파이프라인
 - [ ] AI Hub 데이터 신청 및 다운로드
