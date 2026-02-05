@@ -16,7 +16,7 @@ git+https://github.com/openai/CLIP.git
 Pillow==11.1.0
 
 # Vector DB
-pinecone-client==5.0.1
+pinecone>=5.0.0
 
 # Database
 supabase==2.11.0
