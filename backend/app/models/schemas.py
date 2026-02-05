@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -8,7 +10,11 @@ class HealthResponse(BaseModel):
 
 class SearchRequest(BaseModel):
     query: str | None = Field(default=None, description="텍스트 검색 쿼리")
-    image: str | None = Field(default=None, description="Base64 인코딩 이미지")
+    image: str | None = Field(
+        default=None,
+        max_length=14_000_000,
+        description="Base64 인코딩 이미지 (최대 ~10MB)",
+    )
     category: str | None = None
     sub_category: str | None = None
     brand: str | None = None
@@ -36,7 +42,7 @@ class ProductResult(BaseModel):
 class SearchResponse(BaseModel):
     results: list[ProductResult]
     total: int
-    query_type: str = Field(description="text, image, hybrid 중 하나")
+    query_type: Literal["text", "image", "hybrid"]
 
 
 class RecommendRequest(BaseModel):
