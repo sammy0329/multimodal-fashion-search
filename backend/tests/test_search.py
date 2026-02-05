@@ -265,3 +265,34 @@ class TestSearchEmptyResults:
         data = response.json()
         assert data["total"] == 0
         assert data["results"] == []
+
+
+class TestSearchServiceFailure:
+    async def test_pinecone_failure_returns_503(
+        self, client, mock_search_service
+    ):
+        mock_search_service.search_by_vector = AsyncMock(
+            side_effect=ConnectionError("Pinecone unreachable")
+        )
+
+        response = await client.post(
+            "/api/v1/search",
+            json={"query": "셔츠"},
+        )
+
+        assert response.status_code == 503
+        assert "장애" in response.json()["detail"]
+
+    async def test_supabase_failure_returns_503(
+        self, client, mock_search_service
+    ):
+        mock_search_service.search_by_vector = AsyncMock(
+            side_effect=TimeoutError("Supabase timeout")
+        )
+
+        response = await client.post(
+            "/api/v1/search",
+            json={"query": "바지"},
+        )
+
+        assert response.status_code == 503
