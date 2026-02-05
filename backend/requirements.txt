@@ -22,7 +22,7 @@ pinecone>=5.0.0
 supabase==2.11.0
 
 # Cache
-redis==5.2.1
+redis[asyncio]==5.2.1
 
 # LLM
 anthropic==0.42.0

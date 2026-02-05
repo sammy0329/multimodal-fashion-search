@@ -309,10 +309,10 @@ CREATE INDEX idx_products_price ON products(price);
 - [x] 데이터 파이프라인 오케스트레이터 (seed_data.py CLI)
 
 ### M3: 검색 API
-- [ ] /search 엔드포인트 구현
-- [ ] 이미지 임베딩 처리
-- [ ] 텍스트 임베딩 처리
-- [ ] 하이브리드 필터링
+- [x] /search 엔드포인트 구현
+- [x] 이미지 임베딩 처리
+- [x] 텍스트 임베딩 처리
+- [x] 하이브리드 필터링
 
 ### M4: 추천 코멘트
 - [ ] /recommend 엔드포인트 구현
@@ -346,5 +346,5 @@ CREATE INDEX idx_products_price ON products(price);
 
 ## 현재 상태
 
-**Phase**: M2 완료
-**작업 중**: M3 검색 API
+**Phase**: M3 완료
+**작업 중**: M4 추천 코멘트
