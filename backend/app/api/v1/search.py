@@ -104,11 +104,15 @@ async def search(
     )
 
     # 벡터 검색
-    results = await search_service.search_by_vector(
-        vector=vector,
-        top_k=request.limit,
-        filters=filters,
-    )
+    try:
+        results = await search_service.search_by_vector(
+            vector=vector,
+            top_k=request.limit,
+            filters=filters,
+        )
+    except Exception as exc:
+        logger.error("벡터 검색 실패: %s", exc, exc_info=True)
+        raise HTTPException(status_code=503, detail="검색 서비스 일시 장애") from exc
 
     response = SearchResponse(
         results=results,
@@ -130,18 +134,26 @@ async def _build_embedding(
 ) -> list[float]:
     """검색 타입에 따라 임베딩 벡터를 생성한다."""
     if query_type == "text":
-        assert request.query is not None
+        if not request.query:
+            raise HTTPException(
+                status_code=400, detail="text 검색에는 query가 필요합니다"
+            )
         return await embedding_service.embed_text(request.query)
 
     if query_type == "image":
-        assert request.image is not None
+        if not request.image:
+            raise HTTPException(
+                status_code=400, detail="image 검색에는 image가 필요합니다"
+            )
         image_bytes = _decode_base64_image(request.image)
         image = preprocess_image(image_bytes)
         return await embedding_service.embed_image(image)
 
     # hybrid
-    assert request.image is not None
-    assert request.query is not None
+    if not request.image or not request.query:
+        raise HTTPException(
+            status_code=400, detail="hybrid 검색에는 query와 image 모두 필요합니다"
+        )
     image_bytes = _decode_base64_image(request.image)
     image = preprocess_image(image_bytes)
 

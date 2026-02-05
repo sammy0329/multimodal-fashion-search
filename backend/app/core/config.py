@@ -1,3 +1,4 @@
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -34,3 +35,19 @@ class Settings(BaseSettings):
     clip_batch_size: int = 32
     clip_device: str = ""
     supabase_storage_bucket: str = "product-images"
+
+    @model_validator(mode="after")
+    def check_required_keys(self) -> "Settings":
+        """프로덕션 환경에서 필수 API 키가 설정되어 있는지 검증한다."""
+        if self.app_env == "development":
+            return self
+        missing = []
+        if not self.pinecone_api_key:
+            missing.append("PINECONE_API_KEY")
+        if not self.supabase_url:
+            missing.append("SUPABASE_URL")
+        if not self.supabase_service_key:
+            missing.append("SUPABASE_SERVICE_KEY")
+        if missing:
+            raise ValueError(f"필수 환경변수 누락: {', '.join(missing)}")
+        return self
