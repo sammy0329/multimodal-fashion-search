@@ -14,6 +14,8 @@ from app.core.dependencies import get_settings
 from app.models.schemas import HealthResponse
 from app.services.cache import CacheService
 from app.services.embedding import EmbeddingService
+from app.services.llm import LLMService
+from app.services.recommend import RecommendService
 from app.services.search import SearchService
 
 logger = logging.getLogger(__name__)
@@ -51,6 +53,20 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     cache_service = CacheService(redis_client=redis_client)
     app.state.cache_service = cache_service
     logger.info("CacheService 초기화 완료")
+
+    # LLM + RecommendService
+    llm_service = LLMService(
+        api_key=settings.openai_api_key,
+        model=settings.llm_model,
+        max_tokens=settings.llm_max_tokens,
+        temperature=settings.llm_temperature,
+    )
+    recommend_service = RecommendService(
+        llm_service=llm_service,
+        supabase_client=supabase_client,
+    )
+    app.state.recommend_service = recommend_service
+    logger.info("RecommendService 초기화 완료")
 
     yield
 
