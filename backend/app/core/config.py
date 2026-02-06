@@ -31,6 +31,12 @@ class Settings(BaseSettings):
     # Redis
     redis_url: str = "redis://localhost:6379"
 
+    # LLM
+    llm_model: str = "gpt-4o-mini"
+    llm_max_tokens: int = 1024
+    llm_temperature: float = 0.3
+    recommend_cache_ttl: int = 3600
+
     # Pipeline
     clip_batch_size: int = 32
     clip_device: str = ""

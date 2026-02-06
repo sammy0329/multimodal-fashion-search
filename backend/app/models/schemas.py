@@ -55,5 +55,12 @@ class RecommendResponse(BaseModel):
     product_ids: list[str]
 
 
+class RecommendStreamEvent(BaseModel):
+    """SSE 스트리밍 이벤트."""
+
+    event: Literal["delta", "done", "error"] = "delta"
+    data: str = ""
+
+
 class ErrorResponse(BaseModel):
     detail: str
