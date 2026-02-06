@@ -315,9 +315,9 @@ CREATE INDEX idx_products_price ON products(price);
 - [x] 하이브리드 필터링
 
 ### M4: 추천 코멘트
-- [ ] /recommend 엔드포인트 구현
-- [ ] LLM 프롬프트 최적화
-- [ ] 스트리밍 응답 구현
+- [x] /recommend 엔드포인트 구현
+- [x] LLM 프롬프트 최적화
+- [x] 스트리밍 응답 구현
 
 ### M5: 프론트엔드
 - [ ] 검색 입력 UI (이미지 업로드 + 텍스트)
@@ -346,5 +346,5 @@ CREATE INDEX idx_products_price ON products(price);
 
 ## 현재 상태
 
-**Phase**: M3 완료
-**작업 중**: M4 추천 코멘트
+**Phase**: M4 완료
+**작업 중**: M5 프론트엔드
