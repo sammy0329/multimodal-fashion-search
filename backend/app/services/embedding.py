@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 from functools import partial
 from typing import TYPE_CHECKING
 
@@ -31,6 +32,17 @@ class EmbeddingService:
     """
 
     def __init__(self, device: str | None = None) -> None:
+        self._mock_mode = os.getenv("EMBEDDING_MOCK", "").lower() in ("1", "true")
+
+        if self._mock_mode:
+            logger.warning("임베딩 서비스 MOCK 모드 - 랜덤 벡터 반환")
+            self.device = "cpu"
+            self._clip = None
+            self._torch = None
+            self.model = None
+            self.preprocess = None
+            return
+
         import clip
         import torch
 
@@ -51,8 +63,18 @@ class EmbeddingService:
         self.model.eval()
         logger.info("CLIP 모델 로드 완료")
 
+    def _generate_mock_embedding(self, seed: int = 0) -> list[float]:
+        """Mock 모드용 랜덤 임베딩 생성."""
+        rng = np.random.default_rng(seed)
+        vec = rng.random(EMBEDDING_DIM).astype(np.float32)
+        vec = vec / np.linalg.norm(vec)
+        return vec.tolist()
+
     def _embed_image_sync(self, image: Image.Image) -> list[float]:
         """이미지를 512차원 CLIP 임베딩으로 변환한다 (동기)."""
+        if self._mock_mode:
+            return self._generate_mock_embedding(hash(str(image.size)) % 10000)
+
         image_input = self.preprocess(image).unsqueeze(0).to(self.device)
 
         with self._torch.no_grad():
@@ -63,6 +85,9 @@ class EmbeddingService:
 
     def _embed_text_sync(self, text: str) -> list[float]:
         """텍스트를 512차원 CLIP 임베딩으로 변환한다 (동기)."""
+        if self._mock_mode:
+            return self._generate_mock_embedding(hash(text) % 10000)
+
         tokens = self._clip.tokenize([text], truncate=True).to(self.device)
 
         with self._torch.no_grad():
