@@ -1,19 +1,22 @@
 """AI Hub K-Fashion 데이터 파이프라인 오케스트레이터.
 
-샘플 데이터를 파싱 → CLIP 임베딩 → Supabase/Pinecone 적재한다.
+데이터를 파싱 → CLIP 임베딩 → Supabase/Pinecone 적재한다.
 
 Usage:
     # dry-run (파싱 결과만 확인)
-    python -m scripts.seed_data --data-dir /path/to/sample-data --dry-run
+    python -m scripts.seed_data --data-dir /path/to/data --dry-run
+
+    # 스타일당 100개로 샘플링 (무료 티어 최적화)
+    python -m scripts.seed_data --data-dir /path/to/data --limit-per-style 100 --dry-run
 
     # 전체 파이프라인 실행
-    python -m scripts.seed_data --data-dir /path/to/sample-data
+    python -m scripts.seed_data --data-dir /path/to/data
 
     # 임베딩 스킵 (메타데이터만 적재)
-    python -m scripts.seed_data --data-dir /path/to/sample-data --skip-embedding
+    python -m scripts.seed_data --data-dir /path/to/data --skip-embedding
 
     # 이미지 업로드 스킵
-    python -m scripts.seed_data --data-dir /path/to/sample-data --skip-upload
+    python -m scripts.seed_data --data-dir /path/to/data --skip-upload
 """
 
 import argparse
@@ -79,26 +82,39 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         choices=["DEBUG", "INFO", "WARNING", "ERROR"],
         help="로그 레벨",
     )
+    parser.add_argument(
+        "--limit-per-style",
+        type=int,
+        default=None,
+        help="스타일당 최대 샘플 수 (무료 티어 제한 시 사용, 예: 100)",
+    )
     return parser.parse_args(argv)
 
 
 def _parse_all_products(
     data_dir: Path,
+    limit_per_style: int | None = None,
 ) -> tuple[list[tuple[ProductRecord, Path, int]], dict[int, Path]]:
     """데이터 디렉토리를 스캔하여 상품 레코드와 이미지 매핑을 반환한다.
+
+    Args:
+        data_dir: 데이터 루트 디렉토리
+        limit_per_style: 스타일당 최대 샘플 수 (None이면 제한 없음)
 
     Returns:
         (product_items, unique_images)
         - product_items: (ProductRecord, image_path, image_id) 리스트
         - unique_images: {image_id: image_path} 딕셔너리
     """
-    pairs = scan_data_directory(data_dir)
+    pairs = scan_data_directory(data_dir, limit_per_style=limit_per_style)
 
     product_items: list[tuple[ProductRecord, Path, int]] = []
     unique_images: dict[int, Path] = {}
 
     for label_path, image_path, _style_name in pairs:
         label = parse_label_file(label_path)
+        if label is None:
+            continue
 
         for garment_type, garment in extract_valid_garments(label):
             product = build_product_record(label, garment_type, garment)
@@ -168,8 +184,12 @@ def run_pipeline(args: argparse.Namespace, settings: Settings | None = None) -> 
     }
 
     # Step 1: 데이터 파싱
-    logger.info("Step 1: 데이터 파싱 시작...")
-    product_items, unique_images = _parse_all_products(args.data_dir)
+    limit = args.limit_per_style
+    if limit:
+        logger.info("Step 1: 데이터 파싱 시작 (스타일당 최대 %d개)...", limit)
+    else:
+        logger.info("Step 1: 데이터 파싱 시작...")
+    product_items, unique_images = _parse_all_products(args.data_dir, limit_per_style=limit)
     result["products_parsed"] = len(product_items)
     result["unique_images"] = len(unique_images)
 

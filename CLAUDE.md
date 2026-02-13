@@ -320,10 +320,10 @@ CREATE INDEX idx_products_price ON products(price);
 - [x] 스트리밍 응답 구현
 
 ### M5: 프론트엔드
-- [ ] 검색 입력 UI (이미지 업로드 + 텍스트)
-- [ ] 검색 결과 카드 UI
-- [ ] AI 코멘트 스트리밍 표시
-- [ ] 필터 UI
+- [x] 검색 입력 UI (이미지 업로드 + 텍스트)
+- [x] 검색 결과 카드 UI
+- [x] AI 코멘트 스트리밍 표시
+- [x] 필터 UI
 - [ ] Supabase Auth 연동 (Google 로그인)
 
 ### M6: 배포
@@ -346,5 +346,5 @@ CREATE INDEX idx_products_price ON products(price);
 
 ## 현재 상태
 
-**Phase**: M4 완료
-**작업 중**: M5 프론트엔드
+**Phase**: M5 진행 중
+**작업 중**: Supabase Auth 연동 또는 M6 배포
